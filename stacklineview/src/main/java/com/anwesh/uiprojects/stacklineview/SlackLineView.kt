@@ -4,6 +4,7 @@ package com.anwesh.uiprojects.stacklineview
  * Created by anweshmishra on 17/08/18.
  */
 
+import android.app.Activity
 import android.view.View
 import android.view.MotionEvent
 import android.content.Context
@@ -186,6 +187,15 @@ class StackLineView(ctx : Context) : View(ctx) {
             stackLine.startUpdating {
                 animator.stop()
             }
+        }
+    }
+
+    companion object {
+
+        fun create(activity : Activity) : StackLineView {
+            val view : StackLineView = StackLineView(activity)
+            activity.setContentView(view)
+            return view
         }
     }
 }
