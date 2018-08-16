@@ -9,8 +9,29 @@ import android.view.MotionEvent
 import android.content.Context
 import android.graphics.Paint
 import android.graphics.Canvas
+import android.graphics.Color
 
 val nodes : Int= 5
+
+fun Canvas.drawStackLineNode(i : Int, scale : Float, paint : Paint) {
+    val w : Float = width.toFloat()
+    val h : Float = height.toFloat()
+    val gap : Float = w / (nodes + 1)
+    val size : Float = gap / 3
+    val hSize : Float = gap / nodes
+    val sc1 : Float = Math.min(0.5f, scale) * 2
+    val sc2 : Float = Math.min(0.5f, Math.max(0f, scale - 0.5f)) * 2
+    paint.strokeCap = Paint.Cap.ROUND
+    paint.strokeWidth = Math.min(w, h) / 60
+    paint.color = Color.WHITE
+    save()
+    translate(gap/2 + i * gap + gap * sc1, h/2 - gap / 2 + hSize * i)
+    drawLine(-size/2, 0f, -size/2 + size * sc2, 0f, paint)
+    for (i in 1..(4 - i)) {
+        drawLine(-size/2, hSize * (i + 1), size/2, hSize * (i + 1), paint)
+    }
+    restore()
+}
 
 class StackLineView(ctx : Context) : View(ctx) {
 
