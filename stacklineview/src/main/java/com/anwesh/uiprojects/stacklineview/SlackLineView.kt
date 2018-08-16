@@ -97,4 +97,48 @@ class StackLineView(ctx : Context) : View(ctx) {
             }
         }
     }
+
+    data class SLNode(var i : Int, val state : State = State()) {
+
+        private var next : SLNode? = null
+        private var prev : SLNode? = null
+
+        init {
+            addNeighbor()
+        }
+
+        fun addNeighbor() {
+            if (i < nodes - 1) {
+                next = SLNode(i + 1)
+                next?.prev = this
+            }
+        }
+
+        fun update(cb : (Int, Float) -> Unit) {
+            state.update {
+                cb(i, it)
+            }
+        }
+
+        fun startUpdating(cb : () -> Unit) {
+            state.startUpdating(cb)
+        }
+
+        fun getNext(dir : Int, cb : () -> Unit) : SLNode {
+            var curr : SLNode? = prev
+            if (dir == 1) {
+                curr = next
+            }
+            if (curr != null) {
+                return curr
+            }
+            cb()
+            return this
+        }
+
+        fun draw(canvas : Canvas, paint : Paint) {
+            canvas.drawStackLineNode(i, state.scale, paint)
+            next?.draw(canvas, paint)
+        }
+    }
 }
