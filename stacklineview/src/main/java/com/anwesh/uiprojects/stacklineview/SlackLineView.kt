@@ -18,7 +18,7 @@ fun Canvas.drawStackLineNode(i : Int, scale : Float, paint : Paint) {
     val w : Float = width.toFloat()
     val h : Float = height.toFloat()
     val gap : Float = w / (nodes + 1)
-    val size : Float = gap / 3
+    val size : Float = gap / 2
     val hSize : Float = gap / nodes
     val sc1 : Float = Math.min(0.5f, scale) * 2
     val sc2 : Float = Math.min(0.5f, Math.max(0f, scale - 0.5f)) * 2
@@ -27,9 +27,10 @@ fun Canvas.drawStackLineNode(i : Int, scale : Float, paint : Paint) {
     paint.color = Color.WHITE
     save()
     translate(gap/2 + i * gap + gap * sc1, h/2 - gap / 2 + hSize * i)
-    drawLine(-size/2, 0f, -size/2 + size * sc2, 0f, paint)
+    drawLine(-size/2, 0f, -size/2 + size * (1 - sc2), 0f, paint)
     for (i in 1..(4 - i)) {
-        drawLine(-size/2, hSize * (i + 1), size/2, hSize * (i + 1), paint)
+        val currY : Float = hSize * i
+        drawLine(-size/2, currY, size/2, currY, paint)
     }
     restore()
 }
@@ -55,7 +56,7 @@ class StackLineView(ctx : Context) : View(ctx) {
     data class State(var scale : Float = 0f, var prevScale : Float = 0f, var dir : Float = 0f) {
 
         fun update(cb : (Float) -> Unit) {
-            this.scale += 0.1f * this.scale
+            this.scale += 0.05f * this.dir
             if (Math.abs(this.scale - this.prevScale) > 1) {
                 this.scale = this.prevScale + this.dir
                 this.dir = 0f
@@ -140,7 +141,6 @@ class StackLineView(ctx : Context) : View(ctx) {
 
         fun draw(canvas : Canvas, paint : Paint) {
             canvas.drawStackLineNode(i, state.scale, paint)
-            next?.draw(canvas, paint)
         }
     }
 
@@ -185,7 +185,7 @@ class StackLineView(ctx : Context) : View(ctx) {
 
         fun handleTap() {
             stackLine.startUpdating {
-                animator.stop()
+                animator.start()
             }
         }
     }
