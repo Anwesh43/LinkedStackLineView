@@ -164,4 +164,27 @@ class StackLineView(ctx : Context) : View(ctx) {
             curr.startUpdating(cb)
         }
     }
+
+    data class Renderer(var view : StackLineView) {
+
+        private val stackLine : StackLine = StackLine(0)
+
+        private val animator : Animator = Animator(view)
+
+        fun render(canvas : Canvas, paint : Paint) {
+            canvas.drawColor(Color.parseColor("#212121"))
+            stackLine.draw(canvas, paint)
+            animator.animate {
+                stackLine.update {i, scl ->
+                    animator.stop()
+                }
+            }
+        }
+
+        fun handleTap() {
+            stackLine.startUpdating {
+                animator.stop()
+            }
+        }
+    }
 }
