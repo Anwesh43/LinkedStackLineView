@@ -39,6 +39,7 @@ class StackLineView(ctx : Context) : View(ctx) {
 
     private val paint : Paint = Paint(Paint.ANTI_ALIAS_FLAG)
     private val renderer : Renderer = Renderer(this)
+    var onAnimationComplete : OnAnimationComplete? = null
 
     override fun onDraw(canvas : Canvas) {
         renderer.render(canvas, paint)
@@ -51,6 +52,10 @@ class StackLineView(ctx : Context) : View(ctx) {
             }
         }
         return true
+    }
+
+    fun addOnAnimationComplete(onComplete : (Int) -> Unit, onReset : (Int) -> Unit) {
+        onAnimationComplete = OnAnimationComplete(onComplete, onReset)
     }
 
     data class State(var scale : Float = 0f, var prevScale : Float = 0f, var dir : Float = 0f) {
@@ -179,6 +184,10 @@ class StackLineView(ctx : Context) : View(ctx) {
             animator.animate {
                 stackLine.update {i, scl ->
                     animator.stop()
+                    when(scl) {
+                        0f -> view.onAnimationComplete?.onReset?.invoke(i)
+                        1f -> view.onAnimationComplete?.onComplete?.invoke(i)
+                    }
                 }
             }
         }
@@ -198,4 +207,6 @@ class StackLineView(ctx : Context) : View(ctx) {
             return view
         }
     }
+
+    data class OnAnimationComplete(var onComplete : (Int) -> Unit, var onReset : (Int) -> Unit)
 }
